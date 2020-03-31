@@ -138,67 +138,113 @@ def createNewFolder(title_in):
         os.makedirs(new_dir)
     return new_dir
 
+# This method will extract all of the metadata we can find on a particular OER
 def extractMetaData(soup_in, new_dir_in):
     final_string = ''
-    final_string = new_dir_in # The final string to save to the text file that contains the metadata
-    final_string = final_string + extractMetaDetails(soup_in, new_dir_in)
-    final_string = final_string + extractMetaStandards(soup_in, new_dir_in)
-    final_string = final_string + extractMetaTags(soup_in, new_dir_in)
+    final_string = new_dir_in + '\n' # The final string to save to the text file that contains the metadata
+    final_string = final_string + extractMetaDetailsFirstPart(soup_in)
+    final_string = final_string + extractMetaDetailsSecondPart(soup_in)
+    final_string = final_string + extractMetaTags(soup_in)
     print(final_string)
 
-# TODO COMMENT
-def extractMetaDetails(soup_in, new_dir_in):
+# Extracts information like Subject, Grade Level, Material Type, Date Added.... etc
+def extractMetaDetailsFirstPart(soup_in):
     final_string = ''
-    ################################ Find the details
     container = soup_in.find('div', class_ = "material-details")
     abstract_anchor = container.find('dd', itemprop = "description")
     abstract_text = abstract_anchor.text
     final_string = final_string + "Details: " + abstract_text + '\n'
-    ################################ End details
     
-    ################################ Find the subject
+    dt_list = [] # dts are used as the headers for the meta details
+    dd_list = [] # dds are used as the actual information following the headers
     
-    ################################ End subject
+    container = soup_in.find('dl', class_ = "materials-details-first-part") # This is where the first part of the meta details are stored
     
-    ################################ Find Grade level
+    # No first part found
+    if container is None:
+        return ''
+        
+    dt_container = container.find_all('dt')
+    dd_container = container.find_all('dd')
     
-    ################################ End grade level
+    # DT is the header. I.E. "Grade:" 
+    for dt in dt_container:
+        dt_list.append(dt.text)
     
-    ################################ Find Material Type
-    
-    ################################ End Material Type
-    
-    ################################ Find Author
-    
-    ################################ End Author
-    
-    ################################ Find Date Created/Added
-    
-    ################################ End Date Created/Added
-    
-    ################################ Find License
-    
-    ################################ End License
-    
-    ################################ Find Language
-    
-    ################################ End Language
-    
-    ################################ Find Media Format
-    
-    ################################ End Media Format
-    
-    return abstract_text + "\n"
-    
-# TODO COMMENT
-def extractMetaStandards(soup_in, new_dir_in):
-    print("Not implemented")
-    return "Not implemented"
+    # DD is the information following the header I.E. "8th grade"
+    for dd in dd_container:
+        temp_dd = dd.text.strip() # Remove the white space from the front and end from each dd
+        temp_dd = temp_dd.replace('\n', '') # Remove the new lines from the dd
+        dd_list.append(temp_dd)
+   
+    # Next I will iterate through the lists to create the meta-detail string that will be saved in the file
+    i = 0
+    length = len(dt_list)
+    while i < length:
+        temp_dd = dd_list[i]
+        temp_dt = dt_list[i]
+        final_string = final_string + temp_dt + " " + temp_dd + "\n"
+        i += 1
+        
+    return final_string + "\n"
 
-# TODO COMMENT
-def extractMetaTags(soup_in, new_dir_in):
-    print("Not implemented")
-    return "Not implemented"
+# Extracts the license, language, types of media.. etc
+def extractMetaDetailsSecondPart(soup_in):
+    final_string = ''
+    
+    container = soup_in.find('div', class_ = "material-details-second-part") # This is where the first part of the meta details are stored
+    
+    # No second part found
+    if container is None:
+        return ''
+        
+    dt_container = container.find_all('dt')
+    dd_container = container.find_all('dd')
+    
+    dt_list = [] # dts are used as the headers for the meta details
+    dd_list = [] # dds are used as the actual information following the headers
+   
+   # DT is the header. I.E. "Grade:" 
+    for dt in dt_container:
+        dt_list.append(dt.text)
+    
+    # DD is the information following the header I.E. "8th grade"
+    for dd in dd_container:
+        temp_dd = dd.text.strip() # Remove the white space from the front and end from each dd
+        temp_dd = temp_dd.replace('\n', '') # Remove the new lines from the dd
+        dd_list.append(temp_dd)
+   
+    # Next I will iterate through the lists to create the meta-detail string that will be saved in the file
+    i = 0
+    length = len(dt_list)
+    while i < length:
+        temp_dd = dd_list[i]
+        temp_dt = dt_list[i]
+        final_string = final_string + temp_dt + " " + temp_dd + "\n"
+        i += 1
+        
+    return final_string + "\n"
+    
+# Extracts all of the tags. I.E. Biology
+def extractMetaTags(soup_in):
+    final_string = 'Tags: '
+    container = soup_in.find_all("li", class_ = "tag-instance keyword")
+    
+    # No tags found
+    if container is None:
+        return ''
+  
+    li_list = [] # This list will contain all of the tags
+    
+    for li in container:
+        temp_li = li.text.replace('\n', '')
+        temp_li = li.text.strip()
+        li_list.append(temp_li)
+        
+    for li in li_list:
+        final_string = final_string + li + '\n'
+    
+    return final_string
 
 if __name__ == '__main__':
     scrape_base_page()
