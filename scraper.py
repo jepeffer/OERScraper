@@ -1,19 +1,49 @@
 from bs4 import BeautifulSoup
+from selenium import webdriver
 import requests
 import time
 import zipfile
 import io
 import os
 from os.path import basename, join
+from weasyprint import HTML
 
 BASE_URL = "https://www.oercommons.org/browse?batch_size=100&sort_by=title&view_mode=summary&f.general_subject=life-science"
 SAVE_PATH = "C:\\Users\\myhog\\Desktop\\School\\Capstone\\Resources\\"
+BASE_TEST_URL = "https://www.oercommons.org/browse?f.general_subject=life-science"
+INFINITE_BASE_TEST_URL = "https://www.oercommons.org/browse?batch_start=0&f.general_subject=life-science"
+RESOURCES_PER_PAGE = 80
+LIFE_SCIENCE = "life-science"
+PHYSICAL_SCIENCE = "physical-science"
+MAX_RESOURCES = 5000
+
+def buildNewURL(cur_pos_in, resource_type):
+    new_url = ''
+    new_pos = cur_pos_in + RESOURCES_PER_PAGE
+    first_half_url = "https://www.oercommons.org/browse?batch_start="
+    second_half_url = "&f.general_subject=life-science"
+    new_url = first_half_url + str(new_pos) + second_half_url
+    return new_url
+
+def main():
+    cur_pos_in = 0
+    while (cur_pos_in < MAX_RESOURCES):
+        new_life_url = buildNewURL(cur_pos_in, LIFE_SCIENCE)
+        new_physical_url = buildNewURL(cur_pos_in, PHYSICAL_SCIENCE)
+        cur_pos_in = cur_pos_in + RESOURCES_PER_PAGE
+        scrape_pages(new_life_url)
+        time.sleep(2)
+        scrape_pages(new_physical_url)
+        time.sleep(2)
+    
+      
 
 # Grabs all the HTML from the BASE_URL and parses it based on the class name below... item-link...
 # These links will provide links to our resources we need!
-def scrape_base_page():
-    print("Now scraping: ", BASE_URL)
-    r  = requests.get(BASE_URL)
+def scrape_pages(url_in):
+    
+    print("Now scraping: ", url_in)
+    r  = requests.get(url_in)
     data = r.text
     soup = BeautifulSoup(data,"html.parser")
     all_links = []
@@ -25,7 +55,8 @@ def scrape_base_page():
         time.sleep(2) # We are nice web scrapers...
         print ("#####################################")
         gotoResource(link)
-    
+
+
 # Goes to the specific resource link. This page is the before page for the download/creation of the resource
 def gotoResource(link_in):
     r = requests.get(link_in)
@@ -61,6 +92,7 @@ def createNewDir(soup_in):
     new_dir_title = new_dir_title.replace('|', '_')
     new_dir_title = new_dir_title.replace(':', '_')
     new_dir_title = new_dir_title.replace('&', '_')
+    new_dir_title = new_dir_title.replace('?', '_')
     return createNewFolder(new_dir_title)
 
 # Links are either downloads, or they are just webpages, I will attempt to download and or build my own resource based on the webpages
@@ -111,8 +143,15 @@ def downloadResource(figures_in, new_dir_in):
             print ("Unknown file type: ", file_type, " Now skipping.")
         
 # If the resource is not a download, then we have to scrape the page and its html elements
-def buildResource(download_in, new_dir_in):
-    print("Not implemented")
+def buildResource(soup_in, new_dir_in):
+    container = soup_in.find('div', class_ = "col-md-8 column-main")
+    name_of_file = "temp.html"
+    completeName = os.path.join(new_dir_in, name_of_file)
+    with io.open (completeName, "w", encoding = "utf-8") as f:
+        f.write(str(container))
+    newCompleteName = os.path.join(new_dir_in, "file.pdf")
+    HTML(completeName).write_pdf(newCompleteName)
+    #pdfkit.from_file(completeName, newCompleteName) 
 
 # This method determines the file type by the title of the file
 # I.E Somefile.pdf, this would return pdf.
@@ -145,7 +184,14 @@ def extractMetaData(soup_in, new_dir_in):
     final_string = final_string + extractMetaDetailsFirstPart(soup_in)
     final_string = final_string + extractMetaDetailsSecondPart(soup_in)
     final_string = final_string + extractMetaTags(soup_in)
-    print(final_string)
+    writeMetaDataToFile(final_string, new_dir_in)
+    
+def writeMetaDataToFile(final_string_in, new_dir_in):
+    name_of_file = "Meta.txt"
+    completeName = os.path.join(new_dir_in, name_of_file)
+    with io.open (completeName, "w", encoding = "utf-8") as f:
+       f.write(final_string_in)
+    
 
 # Extracts information like Subject, Grade Level, Material Type, Date Added.... etc
 def extractMetaDetailsFirstPart(soup_in):
@@ -227,7 +273,7 @@ def extractMetaDetailsSecondPart(soup_in):
     
 # Extracts all of the tags. I.E. Biology
 def extractMetaTags(soup_in):
-    final_string = 'Tags: '
+    final_string = 'Tags: ' # The tags do not have a header, so I add it here
     container = soup_in.find_all("li", class_ = "tag-instance keyword")
     
     # No tags found
@@ -236,15 +282,17 @@ def extractMetaTags(soup_in):
   
     li_list = [] # This list will contain all of the tags
     
+    # Add each LI to the list
     for li in container:
         temp_li = li.text.replace('\n', '')
         temp_li = li.text.strip()
         li_list.append(temp_li)
-        
+    
+    # Create the final string
     for li in li_list:
         final_string = final_string + li + '\n'
     
     return final_string
 
 if __name__ == '__main__':
-    scrape_base_page()
+    main()
