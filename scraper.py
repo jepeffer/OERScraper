@@ -35,9 +35,7 @@ def main():
         time.sleep(2)
         scrape_pages(new_physical_url)
         time.sleep(2)
-    
-      
-
+       
 # Grabs all the HTML from the BASE_URL and parses it based on the class name below... item-link...
 # These links will provide links to our resources we need!
 def scrape_pages(url_in):
@@ -52,7 +50,6 @@ def scrape_pages(url_in):
         all_links.append(link.get('href'))
     
     for link in all_links:
-        time.sleep(2) # We are nice web scrapers...
         print ("#####################################")
         gotoResource(link)
 
@@ -64,8 +61,7 @@ def gotoResource(link_in):
     soup = BeautifulSoup(data, "html.parser")
     resource_link = [] # Should only be one link, but it may be more
    
-    new_dir = createNewDir(soup)  
-    extractMetaData(soup, new_dir)
+    final_meta_string = extractMetaData(soup)
    
     for link in soup.find_all('a', class_ = "view-resource-link btn btn-primary js-save-search-parameters"):
         resource_link.append(link.get('href'))
@@ -73,15 +69,52 @@ def gotoResource(link_in):
     print("Resource found: ", resource_link)
 
     for link in resource_link:
-        time.sleep(2) # We are nice web scrapers...
-        decideResource(link, new_dir)
-   
+        #time.sleep(2) # We are nice web scrapers...
+        final_soup = decideResource(link)
+        if final_soup[0] is not None:
+            verify_resource_flag = check_buildable_resource_for_none(final_soup[0], final_soup[1])
+            if verify_resource_flag == True:
+                new_dir = createNewDir(soup) 
+                if (str(new_dir) == SAVE_PATH + "BAD"):
+                    return
+                writeMetaDataToFile(final_meta_string, new_dir)
+                if (final_soup[1] == "Figures"):
+                    downloadResource(final_soup[0], new_dir)
+                elif(final_soup[1] == "Not Figures"):
+                    buildResource(final_soup[0], new_dir)
+            else:
+                print("Bad buildable resource, skipping!")
+            
+        else:
+            print("Bad resource, skipping!")
+    
+def check_buildable_resource_for_none(soup_in, figures_in):
+    flag = True;
+    if (figures_in == "Figures"):
+        return True
+    
+    container = soup_in.find('div', class_ = "col-md-8 column-main")
+    if container is None:
+        container = soup_in.find('div', class_ = "col-md-8 col-sm-12 col-md-pull-4")
+
+    if container is None:
+        container = soup_in.find('div', class_ = "page-wrapper")
+    
+    if container is None:
+        flag = False;
+    
+    return flag;
+
 # Find the title of the new dir and then sends it to the createNewFolder method to actually create the new directory
 # It returns this new directory for future use
 def createNewDir(soup_in):
     container = soup_in.find('h1', class_ = "material-title") # Titles are stored under this class
     new_dir_title = ''
+    if container is None:
+        return createNewFolder("BAD")
     anchor = container.find('a')
+    if anchor is None:
+        container = soup_in.find('h1', class_ = "page-title")
     new_dir_title = anchor.text
     # I need to replace certain characters to match the linux directory name syntax
     # /, >, (WHITESPACE),<,|,:,&
@@ -93,11 +126,12 @@ def createNewDir(soup_in):
     new_dir_title = new_dir_title.replace(':', '_')
     new_dir_title = new_dir_title.replace('&', '_')
     new_dir_title = new_dir_title.replace('?', '_')
+    new_dir_title = new_dir_title.replace('"', '_')
     return createNewFolder(new_dir_title)
 
 # Links are either downloads, or they are just webpages, I will attempt to download and or build my own resource based on the webpages
 # This is not always guaranteed success
-def decideResource(link_in, new_dir_in):
+def decideResource(link_in):
     print("Attemping to decide the resource: ", link_in)
     r = requests.get(link_in)
     data = r.text
@@ -107,14 +141,15 @@ def decideResource(link_in, new_dir_in):
     
     for link in soup.find_all('figure', class_ = "download"):
         figures.append(link)
-    
+    final_soup = ('','')
     if (figures != []):
         print ("Download link found!")
         print ("Now attempting to download!")
-        downloadResource(figures, new_dir_in)
+        final_soup = (figures, "Figures")
     else:
         print ("No download link, now attempting to build the resource by scraping the individual page's html")
-        buildResource(soup, new_dir_in)
+        final_soup = (soup, "Not Figures")
+    return final_soup
  
 # If the resource has a download link it should come to this method!
 def downloadResource(figures_in, new_dir_in):
@@ -145,14 +180,25 @@ def downloadResource(figures_in, new_dir_in):
 # If the resource is not a download, then we have to scrape the page and its html elements
 def buildResource(soup_in, new_dir_in):
     container = soup_in.find('div', class_ = "col-md-8 column-main")
+    links = []
+    if container is None:
+        container = soup_in.find('div', class_ = "col-md-8 col-sm-12 col-md-pull-4")
+        if container is not None:
+            counter = 0
+            for link in container.find_all('figure', class_ = "oembed"):
+                container.insert(counter,link)
+                counter += 1
+    if container is None:
+        container = soup_in.find('div', class_ = "page-wrapper")
+        
     name_of_file = "temp.html"
     completeName = os.path.join(new_dir_in, name_of_file)
     with io.open (completeName, "w", encoding = "utf-8") as f:
         f.write(str(container))
     newCompleteName = os.path.join(new_dir_in, "file.pdf")
     HTML(completeName).write_pdf(newCompleteName)
-    #pdfkit.from_file(completeName, newCompleteName) 
-
+    
+#page-wrapper
 # This method determines the file type by the title of the file
 # I.E Somefile.pdf, this would return pdf.
 def getFileType(title_in):
@@ -178,13 +224,13 @@ def createNewFolder(title_in):
     return new_dir
 
 # This method will extract all of the metadata we can find on a particular OER
-def extractMetaData(soup_in, new_dir_in):
+def extractMetaData(soup_in):
     final_string = ''
-    final_string = new_dir_in + '\n' # The final string to save to the text file that contains the metadata
     final_string = final_string + extractMetaDetailsFirstPart(soup_in)
     final_string = final_string + extractMetaDetailsSecondPart(soup_in)
     final_string = final_string + extractMetaTags(soup_in)
-    writeMetaDataToFile(final_string, new_dir_in)
+    return final_string
+    #writeMetaDataToFile(final_string, new_dir_in)
     
 def writeMetaDataToFile(final_string_in, new_dir_in):
     name_of_file = "Meta.txt"
