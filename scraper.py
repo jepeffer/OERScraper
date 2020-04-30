@@ -15,7 +15,7 @@ INFINITE_BASE_TEST_URL = "https://www.oercommons.org/browse?batch_start=0&f.gene
 RESOURCES_PER_PAGE = 80
 LIFE_SCIENCE = "life-science"
 PHYSICAL_SCIENCE = "physical-science"
-MAX_RESOURCES = 5000
+MAX_RESOURCES = 10000
 
 def buildNewURL(cur_pos_in, resource_type):
     new_url = ''
@@ -32,15 +32,15 @@ def main():
         new_physical_url = buildNewURL(cur_pos_in, PHYSICAL_SCIENCE)
         cur_pos_in = cur_pos_in + RESOURCES_PER_PAGE
         scrape_pages(new_life_url)
-        time.sleep(2)
+        time.sleep(4)
         scrape_pages(new_physical_url)
-        time.sleep(2)
+        time.sleep(4)
        
 # Grabs all the HTML from the BASE_URL and parses it based on the class name below... item-link...
 # These links will provide links to our resources we need!
 def scrape_pages(url_in):
     
-    print("Now scraping: ", url_in)
+    print("Now scraping:", url_in)
     r  = requests.get(url_in)
     data = r.text
     soup = BeautifulSoup(data,"html.parser")
@@ -60,8 +60,7 @@ def gotoResource(link_in):
     data = r.text
     soup = BeautifulSoup(data, "html.parser")
     resource_link = [] # Should only be one link, but it may be more
-   
-    final_meta_string = extractMetaData(soup)
+    time.sleep(4)
    
     for link in soup.find_all('a', class_ = "view-resource-link btn btn-primary js-save-search-parameters"):
         resource_link.append(link.get('href'))
@@ -69,11 +68,12 @@ def gotoResource(link_in):
     print("Resource found: ", resource_link)
 
     for link in resource_link:
-        #time.sleep(2) # We are nice web scrapers...
+        time.sleep(4) # We are nice web scrapers...
         final_soup = decideResource(link)
         if final_soup[0] is not None:
             verify_resource_flag = check_buildable_resource_for_none(final_soup[0], final_soup[1])
             if verify_resource_flag == True:
+                final_meta_string = extractMetaData(soup)
                 new_dir = createNewDir(soup) 
                 if (str(new_dir) == SAVE_PATH + "BAD"):
                     return
@@ -193,10 +193,14 @@ def buildResource(soup_in, new_dir_in):
         
     name_of_file = "temp.html"
     completeName = os.path.join(new_dir_in, name_of_file)
+    list_to_title = new_dir_in.split('\\')
+    
+    file_title = list_to_title[len(list_to_title) - 1] + ".pdf"
+    
     with io.open (completeName, "w", encoding = "utf-8") as f:
         f.write(str(container))
-    newCompleteName = os.path.join(new_dir_in, "file.pdf")
-    HTML(completeName).write_pdf(newCompleteName)
+    newCompleteName = os.path.join(new_dir_in, file_title)
+    HTML(completeName).write_pdf(newCompleteName, presentational_hints=True)
     
 #page-wrapper
 # This method determines the file type by the title of the file
