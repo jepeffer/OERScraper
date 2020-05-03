@@ -1,0 +1,63 @@
+
+import os
+import mysql.connector
+
+rootdir = "/root/Resources/"
+
+def main():
+        mydb = mysql.connector.connect(
+        host="localhost",
+        user="foo",
+        passwd="bar"
+        )
+        print("Database connection is successful")
+        print("Now starting processing of directories!")
+        for subdir, dirs, files in os.walk(rootdir):
+                for file in files:
+                        if(str(file) == "Meta.txt"):
+                            processMetaFile(os.path.join(subdir, file))
+
+def processMetaFile(file):
+        with open(file) as f:
+                file_contents = f.read()
+                processFileContents(file_contents)
+
+def processFileContents(file_contents_in):
+        userid = 0
+        insert_statement = ''
+        file_location = ''
+        description = ''
+        name = ''
+        subject = ''
+        media_format = ''
+        license = ''
+        date_added = ''
+        grade = ''
+        tags = ''
+        author = ''
+        fileid = 0
+        file_contents_list = file_contents_in.split(':')
+        counter = 0
+        for s in file_contents_list:
+            if s == "Details":
+                description = s[counter + 1]
+            if s == "License":
+                license = s[counter + 1]
+            if s == "Media Format":
+                media_format = s[counter + 1]
+            if s == "Tags":
+                tags = s[counter + 1]
+            if s == "Grades":
+                grade = s[counter + 1]
+            if s == "Author":
+                author = s[counter + 1]
+            if s == "Date Added":
+                date_added = s[counter + 1]
+            if s == "Subject":
+                subject = s[counter + 1]
+            insert_statement = "INSERT INTO OER (userid, author, filelocation, description, name, fileid, subject, mediaformat, license, dateadded, grade, upvotes) VALUES (0,\"{0}\",\"{1}\",\"{2}\",\"{3}\",{4},\"{5}\",\"{6}\",\"{7}\",{8},\"{9}\",\"{10}\");".format(author, file_location,description,name,fileid,subject,media_format, license,date_added,grade,0,tags,"none") 
+            counter = counter + 1
+
+if __name__ == '__main__':
+    main()
+

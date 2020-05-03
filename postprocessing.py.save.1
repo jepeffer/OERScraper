@@ -1,0 +1,32 @@
+import os
+import mysql.connector
+
+rootdir = "/root/Resources/"
+
+def main():
+        mydb = mysql.connector.connect(
+        host="localhost",
+        user="foo",
+        passwd="bar"
+        )
+        print("Database connection is successful")
+        print("Now starting processing of directories!")
+        for subdir, dirs, files in os.walk(rootdir):
+                for file in files:
+                        if(str(file) == "Meta.txt"):
+                            processMetaFile(os.path.join(subdir, file))
+
+def processMetaFile(file):
+	with open(file) as f:
+		file_contents = f.read()
+		processFileContents(file_contents)
+
+def processFileContents(file_contents_in):
+	
+file_contents_list = file_contents_in.split(':')
+	print(file_contents_list)
+
+
+if __name__ == '__main__':
+    main()
+
