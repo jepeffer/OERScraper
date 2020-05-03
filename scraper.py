@@ -193,13 +193,14 @@ def buildResource(soup_in, new_dir_in):
 
     name_of_file = "temp.html"
     completeName = os.path.join(new_dir_in, name_of_file)
-    list_to_title = new_dir_in.split('\\')
+    list_to_title = new_dir_in.split('/')
 
     file_title = list_to_title[len(list_to_title) - 1] + ".pdf"
 
     with io.open (completeName, "w", encoding = "utf-8") as f:
         f.write(str(container))
-    newCompleteName = os.path.join(new_dir_in, file_title)
+    
+    newCompleteName = new_dir_in + "/" + file_title
     HTML(completeName).write_pdf(newCompleteName, presentational_hints=True)
 
 #page-wrapper
@@ -352,3 +353,4 @@ def extractMetaTags(soup_in):
 
 if __name__ == '__main__':
     main()
+
