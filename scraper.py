@@ -232,12 +232,15 @@ def extractMetaData(soup_in):
     final_string = ''
     final_string = final_string + extractMetaDetailsFirstPart(soup_in)
     final_string = final_string + extractMetaDetailsSecondPart(soup_in)
-    final_string = final_string + extractMetaTags(soup_in)
+    final_string = final_string + extractMetaTags(soup_in) + ":"
     return final_string
     #writeMetaDataToFile(final_string, new_dir_in)
 
 def writeMetaDataToFile(final_string_in, new_dir_in):
     name_of_file = "Meta.txt"
+    list_to_title = new_dir_in.split('\\')
+    file_title = list_to_title[len(list_to_title) - 1]
+    final_string_in = final_string_in + "File Location:" + file_title
     completeName = os.path.join(new_dir_in, name_of_file)
     with io.open (completeName, "w", encoding = "utf-8") as f:
        f.write(final_string_in)

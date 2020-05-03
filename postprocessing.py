@@ -64,13 +64,14 @@ def processFileContents(file_contents_in, mydb):
             counter = counter + 1
        # insert_statement = "INSERT INTO OER (userid, author, filelocation, description, name, subject, mediaformat, license, dateadded, grade, upvotes) VALUES (0,{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10});".format(author, file_location,description,name,subject,media_format, license,date_added,grade,0,tags,"none")
         mycursor = mydb.cursor()
-        sql_check_for_existing = "SELECT filelocation FROM OER where filelocation = \"" + file_location + "\"" 
+        sql_check_for_existing = "SELECT filelocation FROM OER where filelocation = \"" + file_location + "\""
+        mycursor.execute(sql_check_for_existing)
+        myresult = mycursor.fetchall()
         sql = "INSERT INTO OER (userid, author, filelocation, description, name, subject, mediaformat, license, dateadded, grade, upvotes, tags, remix) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
         val = (0, author, file_location,description,name,subject,media_format, license,date_added,grade,0,tags,"none")
-        #print(sql, val)
-        
-        mycursor.execute(sql, val)
-        mydb.commit()
+        if len(myresult) == 0:
+            mycursor.execute(sql, val)
+            mydb.commit()
 
 
 if __name__ == '__main__':
