@@ -32,9 +32,9 @@ def main():
         new_physical_url = buildNewURL(cur_pos_in, PHYSICAL_SCIENCE)
         cur_pos_in = cur_pos_in + RESOURCES_PER_PAGE
         scrape_pages(new_life_url)
-        time.sleep(4)
+        time.sleep(2)
         scrape_pages(new_physical_url)
-        time.sleep(4)
+       # time.sleep(4)
 
 # Grabs all the HTML from the BASE_URL and parses it based on the class name below... item-link...
 # These links will provide links to our resources we need!
@@ -60,7 +60,7 @@ def gotoResource(link_in):
     data = r.text
     soup = BeautifulSoup(data, "html.parser")
     resource_link = [] # Should only be one link, but it may be more
-    time.sleep(4)
+    time.sleep(2)
 
     for link in soup.find_all('a', class_ = "view-resource-link btn btn-primary js-save-search-parameters"):
         resource_link.append(link.get('href'))
