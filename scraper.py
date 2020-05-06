@@ -7,6 +7,8 @@ import io
 import os
 from os.path import basename, join
 from weasyprint import HTML
+import errno
+from socket import error as socket_error
 
 BASE_URL = "https://www.oercommons.org/browse?batch_size=100&sort_by=title&view_mode=summary&f.general_subject=life-science"
 SAVE_PATH = "/root/Resources/"
@@ -26,14 +28,22 @@ def buildNewURL(cur_pos_in, resource_type):
     return new_url
 
 def main():
-    cur_pos_in = 0
+        main_loop(0)
+       # time.sleep(4)
+
+def main_loop(cur_pos_in):
     while (cur_pos_in < MAX_RESOURCES):
         new_life_url = buildNewURL(cur_pos_in, LIFE_SCIENCE)
         new_physical_url = buildNewURL(cur_pos_in, PHYSICAL_SCIENCE)
         cur_pos_in = cur_pos_in + RESOURCES_PER_PAGE
-        scrape_pages(new_life_url)
-        time.sleep(2)
-        scrape_pages(new_physical_url)
+        try:
+            scrape_pages(new_life_url)
+            time.sleep(2)
+            scrape_pages(new_physical_url)
+        except socket_error as serr:
+            print ("Socket error thrown, now recreating URLS and waiting 5 mintues.")
+            time.sleep(300)
+            main_loop(cur_pos_in + MAX_RESOURCES)
        # time.sleep(4)
 
 # Grabs all the HTML from the BASE_URL and parses it based on the class name below... item-link...
