@@ -1,0 +1,123 @@
+Now scraping: https://www.oercommons.org/browse?batch_start=80&f.general_subject=life-science
+#####################################
+Resource found:  ['https://www.oercommons.org/authoring/8397-10th-grade-ck-12-biology-text/view']
+Traceback (most recent call last):
+  File "scraper.py", line 365, in <module>
+    main()
+  File "scraper.py", line 31, in main
+    main_loop(0)
+  File "scraper.py", line 40, in main_loop
+    scrape_pages(new_life_url)
+  File "scraper.py", line 64, in scrape_pages
+    gotoResource(link)
+  File "scraper.py", line 81, in gotoResource
+    time.sleep(4) # We are nice web scrapers...
+KeyboardInterrupt
+Now scraping: https://www.oercommons.org/browse?batch_start=80&f.general_subject=life-science
+#####################################
+Resource found:  ['https://www.oercommons.org/authoring/8397-10th-grade-ck-12-biology-text/view']
+Attemping to decide the resource:  https://www.oercommons.org/authoring/8397-10th-grade-ck-12-biology-text/view
+Download link found!
+Now attempting to download!
+Download link(s) found:  ['https://www.oercommons.org/editor/documents/115']
+Title of the resource: ZIP KINNEY CK-12 Biology.zip
+Attempting to download:  https://www.oercommons.org/editor/documents/115
+#####################################
+Resource found:  ['https://www.oercommons.org/authoring/46497-1-1-anat/view']
+Attemping to decide the resource:  https://www.oercommons.org/authoring/46497-1-1-anat/view
+No download link, now attempting to build the resource by scraping the individual page's html
+#####################################
+Resource found:  ['https://www.oercommons.org/authoring/47532-1-1-anatomia-e-fisiologia-do-sistema-respiratorio/view']
+Attemping to decide the resource:  https://www.oercommons.org/authoring/47532-1-1-anatomia-e-fisiologia-do-sistema-respiratorio/view
+No download link, now attempting to build the resource by scraping the individual page's html
+#####################################
+Resource found:  ['https://www.oercommons.org/authoring/26964-1-1-anatomy-and-physiology-of-respiratory-system/view']
+Attemping to decide the resource:  https://www.oercommons.org/authoring/26964-1-1-anatomy-and-physiology-of-respiratory-system/view
+No download link, now attempting to build the resource by scraping the individual page's html
+#####################################
+Resource found:  ['https://www.oercommons.org/courses/1-1-introduction-to-microbiology/view']
+Attemping to decide the resource:  https://www.oercommons.org/courses/1-1-introduction-to-microbiology/view
+No download link, now attempting to build the resource by scraping the individual page's html
+Bad buildable resource, skipping!
+#####################################
+Resource found:  ['https://www.oercommons.org/courseware/lesson/56666/overview']
+Attemping to decide the resource:  https://www.oercommons.org/courseware/lesson/56666/overview
+No download link, now attempting to build the resource by scraping the individual page's html
+#####################################
+Resource found:  ['https://www.oercommons.org/authoring/47755-1-2-measurement-in-science_may/view']
+Attemping to decide the resource:  https://www.oercommons.org/authoring/47755-1-2-measurement-in-science_may/view
+No download link, now attempting to build the resource by scraping the individual page's html
+#####################################
+Resource found:  ['http://www.oercommons.org/courses/1918-flu/view']
+Attemping to decide the resource:  http://www.oercommons.org/courses/1918-flu/view
+No download link, now attempting to build the resource by scraping the individual page's html
+Bad buildable resource, skipping!
+#####################################
+Resource found:  ['http://www.oercommons.org/courses/the-1st-new-disease-of-the-21st-century/view']
+Attemping to decide the resource:  http://www.oercommons.org/courses/the-1st-new-disease-of-the-21st-century/view
+No download link, now attempting to build the resource by scraping the individual page's html
+Bad buildable resource, skipping!
+#####################################
+Resource found:  ['http://www.oercommons.org/courses/the-2000-meter-row-a-case-study-in-performance-anxiety/view']
+Attemping to decide the resource:  http://www.oercommons.org/courses/the-2000-meter-row-a-case-study-in-performance-anxiety/view
+No download link, now attempting to build the resource by scraping the individual page's html
+Bad buildable resource, skipping!
+#####################################
+Resource found:  ['http://www.oercommons.org/courses/the-2000-meter-row-a-case-in-homeostasis/view']
+Attemping to decide the resource:  http://www.oercommons.org/courses/the-2000-meter-row-a-case-in-homeostasis/view
+No download link, now attempting to build the resource by scraping the individual page's html
+Bad buildable resource, skipping!
+#####################################
+Resource found:  ['https://www.oercommons.org/courses/2009-maize-genome-collection/view']
+Attemping to decide the resource:  https://www.oercommons.org/courses/2009-maize-genome-collection/view
+No download link, now attempting to build the resource by scraping the individual page's html
+Bad buildable resource, skipping!
+#####################################
+Resource found:  ['https://www.oercommons.org/courses/2-day-investigation-of-soil-samples/view']
+Attemping to decide the resource:  https://www.oercommons.org/courses/2-day-investigation-of-soil-samples/view
+No download link, now attempting to build the resource by scraping the individual page's html
+Bad buildable resource, skipping!
+#####################################
+Resource found:  ['https://www.oercommons.org/courses/2nd-grade-act-02-healthy-foods/view']
+Attemping to decide the resource:  https://www.oercommons.org/courses/2nd-grade-act-02-healthy-foods/view
+No download link, now attempting to build the resource by scraping the individual page's html
+Bad buildable resource, skipping!
+#####################################
+Resource found:  ['https://www.oercommons.org/courseware/lesson/55505/overview']
+Attemping to decide the resource:  https://www.oercommons.org/courseware/lesson/55505/overview
+No download link, now attempting to build the resource by scraping the individual page's html
+#####################################
+Resource found:  ['https://www.oercommons.org/courses/3rc-reduce-reuse-recycle-and-compost/view']
+Attemping to decide the resource:  https://www.oercommons.org/courses/3rc-reduce-reuse-recycle-and-compost/view
+No download link, now attempting to build the resource by scraping the individual page's html
+Bad buildable resource, skipping!
+#####################################
+Resource found:  ['https://www.oercommons.org/courseware/lesson/24438/overview']
+Attemping to decide the resource:  https://www.oercommons.org/courseware/lesson/24438/overview
+No download link, now attempting to build the resource by scraping the individual page's html
+#####################################
+Resource found:  ['https://www.oercommons.org/courses/4th-grade-course-sequence/view']
+Attemping to decide the resource:  https://www.oercommons.org/courses/4th-grade-course-sequence/view
+No download link, now attempting to build the resource by scraping the individual page's html
+Bad buildable resource, skipping!
+#####################################
+Resource found:  ['https://www.oercommons.org/courseware/lesson/56665/overview']
+Attemping to decide the resource:  https://www.oercommons.org/courseware/lesson/56665/overview
+No download link, now attempting to build the resource by scraping the individual page's html
+#####################################
+Resource found:  ['https://www.oercommons.org/authoring/52687-5-honey-bee-stem-unit-rizzolino-kocher/view']
+Attemping to decide the resource:  https://www.oercommons.org/authoring/52687-5-honey-bee-stem-unit-rizzolino-kocher/view
+No download link, now attempting to build the resource by scraping the individual page's html
+#####################################
+Resource found:  ['https://www.oercommons.org/courses/6-5-nerves-hormones-homeostasis/view']
+Attemping to decide the resource:  https://www.oercommons.org/courses/6-5-nerves-hormones-homeostasis/view
+No download link, now attempting to build the resource by scraping the individual page's html
+Bad buildable resource, skipping!
+#####################################
+Resource found:  ['https://www.oercommons.org/courses/7-4-matter-cycling-photosynthesis-unit-overview/view']
+Attemping to decide the resource:  https://www.oercommons.org/courses/7-4-matter-cycling-photosynthesis-unit-overview/view
+No download link, now attempting to build the resource by scraping the individual page's html
+Bad buildable resource, skipping!
+#####################################
+Resource found:  ['https://www.oercommons.org/authoring/49819-9-major-animal-phyla/view']
+Attemping to decide the resource: 

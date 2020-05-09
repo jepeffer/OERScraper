@@ -1,0 +1,100 @@
+import mysql.connectorimport mysql.connector from zipfile import ZipFile rootdir = "/root/Resources/" def main(): from 
+zipfile import ZipFile mydb = mysql.connector.connect(
+        host="localhost", rootdir = "/root/Resources/" user="foo",
+        passwd="bar", def main(): db = "GEE_DB"
+    mydb = mysql.connector.connect( )
+        host="localhost", #meta(mydb)
+        user="foo", zipFiles(mydb) def meta(mydb):
+        passwd="bar", print("Database connection is successful")
+        db = "GEE_DB" print("Now starting processing of directories!")
+        ) for subdir, dirs, files in os.walk(rootdir):
+    #meta(mydb) for file in files:
+    zipFiles(mydb) if(str(file) == "Meta.txt"): def meta(mydb): processMetaFile(os.path.join(subdir, file), mydb)
+        print("Database connection is successful") def zipFiles(mydb):
+        print("Now starting processing of directories!") list_of_files = []
+        for subdir, dirs, files in os.walk(rootdir): for subdir, dirs, files in os.walk(rootdir):
+                for file in files: for file in files:
+                        if(str(file) == "Meta.txt"): list_of_files.append(file)
+                            processMetaFile(os.path.join(subdir, file), mydb) processZipFile(subdir, list_of_files)
+                                                       
+                            
+def processZipFile(subdir, list_of_files): def zipFiles(mydb): dir_name_full = subdir.split('/')
+    list_of_files = [] dir_name = dir_name_full[len(dir_name_full) - 1]
+    for folder in os.listdir(rootdir): zipObj = ZipFile(dir_name, 'w')
+        zipf = zipfile.ZipFile('{0}.zip'.format(os.path.join(path, folder)), 'w', zipfile.ZIP_DEFLATED) for file in 
+list_of_files:
+        for root, dirs, files in os.walk(os.path.join(path, folder)): zipObj.write(file)
+            for filename in files: zipObj.close()
+                zipf.write(os.path.abspath(os.path.join(root, filename)), arcname=filename) def processMetaFile(file, mydb):
+        zipf.close() with open(file) as f:
+                                           file_contents = f.read()
+                                            processFileContents(file_contents, mydb) def 
+processFileContents(file_contents_in, mydb): def processZipFile(subdir, list_of_files): userid = 0
+    print("This is the sub directory:", subdir) insert_statement = ''
+    zipObj = ZipFile(subdir + ".zip", 'w') file_location = ''
+    for file in list_of_files: description = ''
+        zipObj.write(file) name = ''
+    zipObj.close() subject = ''
+            media_format = '' def processMetaFile(file, mydb): license = ''
+        with open(file) as f: date_added = ''
+                file_contents = f.read() grade = ''
+                processFileContents(file_contents, mydb) tags = ''
+        author = '' def processFileContents(file_contents_in, mydb): fileid = 0
+        userid = 0 file_contents_list = file_contents_in.split(':')
+        insert_statement = '' counter = 0
+        file_location = '' for s in file_contents_list:
+        description = '' s = s.strip()
+        name = '' #print("{",s,"}")
+        subject = '' if s == "Details":
+        media_format = '' description = file_contents_list[counter + 1]
+        license = '' if s == "License":
+        date_added = '' license = file_contents_list[counter + 1]
+        grade = '' if s == "Media Format":
+        tags = '' media_format = file_contents_list[counter + 1]
+        author = '' if s == "Tags":
+        fileid = 0 tags = file_contents_list[counter + 1]
+        file_contents_list = file_contents_in.split(':') if s == "Grades":
+        counter = 0 grade = file_contents_list[counter + 1]
+        for s in file_contents_list: if s == "Author":
+            s = s.strip() author = file_contents_list[counter + 1]
+            #print("{",s,"}") #print("This is author:", author)
+            if s == "Details": if s == "Date Added":
+                description = file_contents_list[counter + 1] date_added = file_contents_list[counter + 1]
+            if s == "License": if s == "Subject":
+                license = file_contents_list[counter + 1] subject = file_contents_list[counter + 1]
+            if s == "Media Format": if s == "File Location":
+                media_format = file_contents_list[counter + 1] file_location = file_contents_list[counter + 1]
+            if s == "Tags": counter = counter + 1
+                tags = file_contents_list[counter + 1] # insert_statement = "INSERT INTO OER (userid, author, filelocation, 
+description, name, subject, mediaformat, license, dateadded, grade,
+            if s == "Grades": # upvotes) VALUES (0,{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10});".format(author, 
+file_location,description,name,subject,media_format,
+                grade = file_contents_list[counter + 1] # license,date_added,grade,0,tags,"none")
+            if s == "Author": mycursor = mydb.cursor()
+                author = file_contents_list[counter + 1] sql_check_for_existing = "SELECT filelocation FROM OER where 
+filelocation = \"" + file_location + "\""
+                #print("This is author:", author) mycursor.execute(sql_check_for_existing)
+            if s == "Date Added": myresult = mycursor.fetchall()
+                date_added = file_contents_list[counter + 1] sql = "INSERT INTO OER (userid, author, filelocation, 
+description, name, subject, mediaformat, license, dateadded, grade, upvotes, tags, remix) VALUES (%s, %s, %s, %s, %s, %s, 
+%s, %s, %s, %s, %s, %s, %s)"
+            if s == "Subject": val = (0, author, file_location,description,name,subject,media_format, 
+license,date_added,grade,0,tags,"none")
+                subject = file_contents_list[counter + 1] if len(myresult) == 0:
+            if s == "File Location": mycursor.execute(sql, val)
+                file_location = file_contents_list[counter + 1] mydb.commit() if __name__ == '__main__':
+            counter = counter + 1 main()
+       # insert_statement = "INSERT INTO OER (userid, author, filelocation, description, name, subject, mediaformat, 
+       # license, dateadded, grade, upvotes) VALUES (0,{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10});".format(author, 
+       # file_location,description,name,subject,media_format, license,date_added,grade,0,tags,"none")
+        mycursor = mydb.cursor()
+        sql_check_for_existing = "SELECT filelocation FROM OER where filelocation = \"" + file_location + "\""
+        mycursor.execute(sql_check_for_existing)
+        myresult = mycursor.fetchall()
+        sql = "INSERT INTO OER (userid, author, filelocation, description, name, subject, mediaformat, license, dateadded, 
+grade, upvotes, tags, remix) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        val = (0, author, file_location,description,name,subject,media_format, license,date_added,grade,0,tags,"none")
+        if len(myresult) == 0:
+            mycursor.execute(sql, val)
+            mydb.commit() if __name__ == '__main__':
+    main()

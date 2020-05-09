@@ -11,55 +11,28 @@ def main():
         passwd="bar",
         db = "GEE_DB"
         )
-    meta(mydb)
+    #meta(mydb)
     zipFiles(mydb)
-    processPdfLocation(mydb)
-
 def meta(mydb):
         print("Database connection is successful")
         print("Now starting processing of directories!")
         for subdir, dirs, files in os.walk(rootdir):
                 for file in files:
-                    file_string = str(file)
-                    if(str(file) == "Meta.txt"):
-                        processMetaFile(os.path.join(subdir, file), mydb)
-                        print("yes")
-                    elif (file_string[-3:] == "pdf"):
-                        pdfLocation(os.path.join(subdir, file), mydb, subdir, file)
-
-def processPdfLocation(mydb):
-    for subdir, dirs, files in os.walk(rootdir):
-                for file in files:
-                    file_string = str(file)
-                    if (file_string[-3:] == "pdf"):
-                        pdfLocation(os.path.join(subdir, file), mydb, subdir, file)
-
-def pdfLocation(file_contents_in, mydb, subdir, file):
-    mycursor = mydb.cursor()
-    sql_check_for_existing = "SELECT fileid FROM OER where filelocation = \"" + subdir + "\""
-    mycursor.execute(sql_check_for_existing)
-    myresult = mycursor.fetchall()
-    if len(myresult) > 0:
-        for row in myresult:
-            insert_sql = "UPDATE OER SET pdflocation = \"" + os.path.join(subdir, file) + "\" WHERE fileid = " + str(row[0])
-        mycursor.execute(insert_sql)
-        mydb.commit()
-    
+                        if(str(file) == "Meta.txt"):
+                            processMetaFile(os.path.join(subdir, file), mydb)
+                            
 def zipFiles(mydb):
     for folder in os.listdir(rootdir):
         print("FOLDER EXT", folder[-3:])
-        folder_string = str(folder)
-        if folder_string[-3:] == "zip" or folder_string[-3:] == "rar":
-            print("Zip found, now skipping")
-        else:
-            print("Unzipped folder found, now zipping: ", folder)
+        if folder[-3:] is not "zip":
+            print("This is folder: ", folder)
             zipf = zipfile.ZipFile('{0}.zip'.format(os.path.join(rootdir, folder)), 'w', zipfile.ZIP_DEFLATED)
             for root, dirs, files in os.walk(os.path.join(rootdir, folder)):
                 for filename in files:
                     zipf.write(os.path.abspath(os.path.join(root, filename)), arcname=filename)
             zipf.close()
-
-
+                           
+                            
 def processZipFile(subdir, list_of_files):
     print("This is the sub directory:",  subdir)
     zipObj = ZipFile(subdir + ".zip", 'w')
@@ -116,10 +89,10 @@ def processFileContents(file_contents_in, mydb):
         sql_check_for_existing = "SELECT filelocation FROM OER where filelocation = \"" + file_location + "\""
         mycursor.execute(sql_check_for_existing)
         myresult = mycursor.fetchall()
-        insert_sql = "INSERT INTO OER (userid, author, filelocation, description, name, subject, mediaformat, license, dateadded, grade, upvotes, tags, remix) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-        insert_val = (0, author, file_location,description,name,subject,media_format, license,date_added,grade,0,tags,"none")
+        sql = "INSERT INTO OER (userid, author, filelocation, description, name, subject, mediaformat, license, dateadded, grade, upvotes, tags, remix) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        val = (0, author, file_location,description,name,subject,media_format, license,date_added,grade,0,tags,"none")
         if len(myresult) == 0:
-            mycursor.execute(insert_sql, insert_val)
+            mycursor.execute(sql, val)
             mydb.commit()
 
 
